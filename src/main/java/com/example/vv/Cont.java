@@ -1,6 +1,7 @@
 package com.example.vv;
 
 
+import org.apache.catalina.core.ApplicationPart;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -8,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import java.io.*;
 import java.util.List;
@@ -27,23 +29,26 @@ public class Cont {
             @RequestPart(name = "letterBarcode") String letterBarcode,
             @RequestPart(name = "processType", required = false) Integer processType
     ) throws Exception {
+        boolean inMemory = false;
+        //        throw new RuntimeException("kkkk");
         MultipartFile multipartFile = zipFile.get(0);
-//        throw new RuntimeException("kkkk");
-        InputStream stream = multipartFile.getInputStream();
         String filename = multipartFile.getOriginalFilename();
-
-        OutputStream out = new FileOutputStream("D:\\opt\\wildfly-share\\destination\\" + "test-file" + filename);
-        IOUtils.copy(stream, out);
-        stream.close();
-        out.close();
-
-//        File source = new File(filename);
-//        File dest = new File("D:\\opt\\wildfly-share\\destination\\555_60_1200809668_2023-03-23_32a226e1-933f-4d85-9346-55740c51f84f.zip");
-//        try {
-//            FileUtils.copyFile(source, dest);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
+        if (inMemory) {
+            //        Upload in memory
+            File dest = new File("D:\\DestinationFileFolder\\" + filename);
+            try {
+                byte[] bytes = zipFile.get(0).getBytes();
+                FileUtils.writeByteArrayToFile(dest, bytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+//        Streaming upload
+            InputStream stream = multipartFile.getInputStream();
+            OutputStream out = new FileOutputStream("D:\\DestinationFileFolder\\" + filename);
+            IOUtils.copy(stream, out);
+            stream.close();
+            out.close();
+        }
     }
 }
