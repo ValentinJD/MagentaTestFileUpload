@@ -1,20 +1,18 @@
 package com.example.vv;
 
 
-import org.apache.catalina.core.ApplicationPart;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import java.io.*;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/")
 public class Cont {
@@ -39,6 +37,7 @@ public class Cont {
             try {
                 byte[] bytes = zipFile.get(0).getBytes();
                 FileUtils.writeByteArrayToFile(dest, bytes);
+                log.info("File saved use memory in {}","D:\\DestinationFileFolder\\" + filename);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -49,6 +48,7 @@ public class Cont {
             IOUtils.copy(stream, out);
             stream.close();
             out.close();
+            log.info("File saved use streaming upload in {}","D:\\DestinationFileFolder\\" + filename);
         }
     }
 }
